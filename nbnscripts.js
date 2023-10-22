@@ -24,15 +24,9 @@ const user = {
     username: "",
     userID: -1,
     rank: "",
-    l1Date: null,
-    l2Date: null,
-    l3Date: null,
-    m1Date: null,
-    m2Date: null,
-    m3Date: null,
-    h1Date: null,
-    h2Date: null,
-    h3Date: null,
+    l1Date: null, l2Date: null, l3Date: null,
+    m1Date: null, m2Date: null, m3Date: null,
+    h1Date: null, h2Date: null, h3Date: null,
 }
 
 /**
@@ -123,18 +117,8 @@ function databaseFromSheet(){
         var h3 = values[i][28]
 
         const user = {
-            username: username,
-            userId: userID,
-            rank: rank,
-            l1: l1,
-            l2: l2,
-            l3: l3,
-            m1: m1,
-            m2: m2,
-            m3: m3,
-            h1: h1,
-            h2: h2,
-            h3: h3,
+            username: username, userId: userID, rank: rank, 
+            l1: l1, l2: l2, l3: l3, m1: m1, m2: m2, m3: m3, h1: h1, h2: h2, h3: h3,
         }
         databaseSheet.push(user)
     }
@@ -148,38 +132,102 @@ function databaseFromSheet(){
 function compareDatabases(d1, d2){
     var databaseSheet = []
     var count = 0
-    // double for loop to search
+    // d1 is base database sheet
     for(i in d1){
-        
+        var flagInGroup = false;
         for(j in d2){
-            //if it equals name, then match
+            //case in group and in database = update
+
+            //found username
             if(d1[i].username == d2[j].username){
-                Logger.log(d1[i].username)
+                flagInGroup = true;
+                
                 count++
                 if(d1[i].rank != d2[j].rank){
-                    const user = {
+                    const entry = {
                         username: d2[j].username,
                         userId: d2[j].userId,
-                        rank: d2[j].rank
+                        rank: d2[j].rank,
+                        action: "update"
                     }
-                    databaseSheet.push(user)
+                    databaseSheet.push(entry)
                 }
             }
+
+        }
+        //case in database but not in group = remove 
+        if(flagInGroup == false){
+            const entry = {
+                username: d1[i].username,
+                userId: d1[i].userId,
+                rank: d1[i].rank,
+                action: "remove"
+            }
+            databaseSheet.push(entry)
+        }
+    }
+    //case in group but not in sheet
+    for(j in d2){
+        var flagInSheet = false;
+        for(i in d1){
+            if(d1[i].username == d2[j].username){
+                flagInSheet = true;
+            }
+        }
+        if(flagInSheet == false){
+            const entry = {
+                username: d2[j].username,
+                userId: d2[j].userId,
+                rank: d2[j].rank,
+                action: "addition"
+            }
+            databaseSheet.push(entry)
         }
     }
     Logger.log(count)
     return databaseSheet
 }
 
+/**
+ * uses the d1 base database (sheets) and process the list of entries in e1.
+ * returns the updated database to parse onto the sheet.
+ */
+function setDatabase(d1, e1){
+
+}
+
+/**
+ * updates the sheets with the database object
+ * pulls the formula down
+ */
+function updateSheet(d1){
+
+}
+
+/**
+ * sorts the sheet by the existing sort parameter
+ */
+function sortSheet(){
+
+}
+
+// if group, not database = addition to database
+// if not group, database = removal from database
+// if group, and database = update
+
 function meow(){
     var list1 = databaseFromSheet()
-    Logger.log("meow1")
     var list2 = databaseFromGroup()
-    Logger.log("meow2")
     var compare = compareDatabases(list1, list2)
+    var date = new Date();
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
     for(i in compare){
         Logger.log(compare[i])
         
     }
-    
+
+    Logger.log(date)
 }
