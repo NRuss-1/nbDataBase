@@ -70,15 +70,15 @@ function databaseFromGroup(){
         var rank = ("name" in rankFetch.data[0] ? (rankFetch.data[0]['name']) : '');
 
         while(true){
-            for(var i = 0; j < allData.data.length; j++){
+            for(var j = 0; j < allData.data.length; j++){
                 // fetches the username for the specific object
-                username = ("username" in allData.data[n] ? (allData.data[n]['username']) : '');
-                
+                usernameGet = ("username" in allData.data[j] ? (allData.data[j]['username']) : '');
+                userIdGet = ("userId" in allData.data[j] ? (allData.data[j]['userId']) : '');
                 // creates a user object and pushes it onto the sample database
                 if (username != undefined){
                     const user = {
-                        username: username,
-                        userID: -1,       // TO BE IMPLEMENTED TBI
+                        username: usernameGet,
+                        userId: userIdGet,       // TO BE IMPLEMENTED TBI
                         rank: rank
                     }
                     databaseGroup.push(user)
@@ -100,5 +100,8 @@ function databaseFromGroup(){
 
 function meow(){
     var list1 = databaseFromGroup()
-    Logger.log(list1)
+    for(i in list1){
+        Logger.log(list1[i])
+    }
+    
 }
