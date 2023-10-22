@@ -147,25 +147,35 @@ function databaseFromSheet(){
  */
 function compareDatabases(d1, d2){
     var databaseSheet = []
-    
+    var count = 0
     // double for loop to search
     for(i in d1){
+        
         for(j in d2){
             //if it equals name, then match
             if(d1[i].username == d2[j].username){
-                Logger.log(d1[i].rank, d2[j].rank)
+                Logger.log(d1[i].username)
+                count++
                 if(d1[i].rank != d2[j].rank){
-                    databaseSheet.push(d2[j])
+                    const user = {
+                        username: d2[j].username,
+                        userId: d2[j].userId,
+                        rank: d2[j].rank
+                    }
+                    databaseSheet.push(user)
                 }
             }
         }
     }
+    Logger.log(count)
     return databaseSheet
 }
 
 function meow(){
     var list1 = databaseFromSheet()
+    Logger.log("meow1")
     var list2 = databaseFromGroup()
+    Logger.log("meow2")
     var compare = compareDatabases(list1, list2)
     for(i in compare){
         Logger.log(compare[i])
