@@ -2,6 +2,7 @@
  * nbnscript.js
  * author Alleycat peer reviewed by DrDig
  * functions that runs the nbn database
+ * version 1.0.3
  */
 
 // imports
@@ -309,6 +310,8 @@ function getRankAsNumber(b){
         rank2 = 8
     } else if(b.rank == "Admiral"){
         rank2 = 9
+    } else if(b.rank == "Chancellor"){
+        rank2 = 10
     }
     return rank2
 }
@@ -378,7 +381,6 @@ function getDatesInfo(d1){
 }
 /**
  * updates the sheets with the database object
- * pulls the formula down
  */
 function updateSheet(d1){
     // gets main sheet from and sets active
@@ -387,6 +389,7 @@ function updateSheet(d1){
     main.activate();
     var last = main.getLastRow()
     var targetRows = d1.length + 9
+
     // add the required amount of rows
     if(targetRows > last){
         main.insertRowsAfter(last, targetRows - last)
@@ -407,6 +410,22 @@ function updateSheet(d1){
     
     userInfoRange2.setValues(getDatesInfo(d1))
 
+    // hide the hidden rows/columns
+    var userHidec= main.getRange("E:E")
+    main.hideColumn(userHidec)
+    var userHider= main.getRange("9:9")
+    main.hideRow(userHider)
+}   
+
+/**
+ * pulls the formula down from the formula tab split into 2 functions
+ */
+function pullDownFormula1(){
+    // gets main sheet from and sets active
+    var databaseSheet = []
+    var main = SpreadsheetApp.getActive().getSheetByName("Main");
+    main.activate();
+
     // pull down the formulas from the formula row
 
     // array in [copy from, copy to range] format
@@ -416,23 +435,38 @@ function updateSheet(d1){
     var l4e = [main.getRange('N9:O9'), main.getRange('N9:O')]
     var m1e = [main.getRange('Q9:R9'), main.getRange('Q9:R')]
     var m2e = [main.getRange('T9:U9'), main.getRange('T9:U')]
-    var m3e = [main.getRange('W9:X9'), main.getRange('W9:X')]
-    var h1e = [main.getRange('Z9:AA9'), main.getRange('Z9:AA')]
-    var h2e = [main.getRange('AC9:AD9'), main.getRange('AC9:AD')]
-    var h3e = [main.getRange('AF9:AG9'), main.getRange('AF9:AG')]
-    var ms = [main.getRange('AI9:AL9'), main.getRange('AI9:AL')]
-    var eventArray = [l1e, l2e, l3e, l4e, m1e, m2e, m3e, h1e, h2e, h3e, ms]
+    var eventArray = [l1e, l2e, l3e, l4e, m1e, m2e]
 
     // copys down the formulas
     for(var i = 0; i < eventArray.length; i++){
         eventArray[i][0].copyTo(eventArray[i][1], SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false)
     }
-    // hide the hidden rows/columns
-    var userHidec= main.getRange("E:E")
-    main.hideColumn(userHidec)
-    var userHider= main.getRange("9:9")
-    main.hideRow(userHider)
 }   
+
+/**
+ * pulls the formula down from the formula tab split into 2 functions
+ */
+function pullDownFormula2(){
+    // gets main sheet from and sets active
+    var databaseSheet = []
+    var main = SpreadsheetApp.getActive().getSheetByName("Main");
+    main.activate();
+
+    // pull down the formulas from the formula row
+
+    // array in [copy from, copy to range] format
+    var m3e = [main.getRange('W9:X9'), main.getRange('W9:X')]
+    var h1e = [main.getRange('Z9:AA9'), main.getRange('Z9:AA')]
+    var h2e = [main.getRange('AC9:AD9'), main.getRange('AC9:AD')]
+    var h3e = [main.getRange('AF9:AG9'), main.getRange('AF9:AG')]
+    var ms = [main.getRange('AI9:AL9'), main.getRange('AI9:AL')]
+    var eventArray = [m3e, h1e, h2e, h3e, ms]
+
+    // copys down the formulas
+    for(var i = 0; i < eventArray.length; i++){
+        eventArray[i][0].copyTo(eventArray[i][1], SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false)
+    }
+}  
 
 // if group, not database = addition to database
 // if not group, database = removal from database
@@ -442,31 +476,48 @@ function updateSheet(d1){
  * main (meow) function, automatically update it
  */
 function meow(){
-    //gets base list and dest list
-    var list1 = databaseFromSheet()
-    Logger.log("from sheet completed")
-    var list2 = databaseFromGroup()
-    Logger.log("from group completed")
-    // compare and return the differences
-    var compare = compareDatabases(list1, list2)
+    //wait till calculations are finished
+    var preflushDate = new Date();
+    SpreadsheetApp.flush();
 
-    // sets up date
-    var date = new Date();
-    date.setHours(0);
-    date.setMinutes(0);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
+    //checks if there is enough time to run
+    var postflushDate = new Date();
+    var elapsed = postflushDate - preflushDate;
+    var execute = true;
+    if(elapsed / 1000 > 180){
+        execute = false;
+    }
+    if(execute){
+        //gets base list and dest list
+        var list1 = databaseFromSheet()
+        Logger.log("from sheet completed")
+        var list2 = databaseFromGroup()
+        Logger.log("from group completed")
+        // compare and return the differences
+        var compare = compareDatabases(list1, list2)
 
-    // process the entries from compare onto base
-    var result = setDatabase(list1, compare, date);
+        // sets up date
+        var date = new Date();
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
 
-    // sorts the list
-    var sortedResult = sortSheet(result)
-    Logger.log("processing completed")
+        // process the entries from compare onto base
+        var result = setDatabase(list1, compare, date);
 
-    // update the spreadsheet to hasve the new base
-    updateSheet(sortedResult);
-    Logger.log("updating completed")
+        // sorts the list
+        var sortedResult = sortSheet(result)
+        Logger.log("processing completed")
+
+        // update the spreadsheet to hasve the new base
+        updateSheet(sortedResult);
+        Logger.log("updating completed")
+
+        pullDownFormula1()
+        pullDownFormula2()
+        Logger.log("formulas completed")
+    }
 
 }
 
