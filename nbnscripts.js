@@ -1,6 +1,6 @@
 /**
  * nbnscript.js
- * author Alleycat peer revied by DrDig
+ * author Alleycat peer reviewed by DrDig
  * functions that runs the nbn database
  */
 
@@ -438,6 +438,9 @@ function updateSheet(d1){
 // if not group, database = removal from database
 // if group, and database = update
 
+/**
+ * main (meow) function, automatically update it
+ */
 function meow(){
     //gets base list and dest list
     var list1 = databaseFromSheet()
@@ -465,4 +468,11 @@ function meow(){
     updateSheet(sortedResult);
     Logger.log("updating completed")
 
+}
+
+/**
+ * manual override update function, macros and runs the sheet
+ */
+function meowMacro(){
+    meow()
 }
