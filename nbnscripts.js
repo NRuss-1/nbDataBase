@@ -2,7 +2,7 @@
  * nbnscript.js
  * author Alleycat peer reviewed by DrDig
  * functions that runs the nbn database
- * version 1.0.3
+ * version 1.0.4
  */
 
 // imports
@@ -45,7 +45,7 @@ function databaseFromGroup(){
     // create a new database instance
     var databaseGroup = [];
 
-    for (var i = 2; i < 12; i++) {
+    for (var i = 2; i < 13; i++) {
         
         // sets roledata and roleId
         var roleData = JSON.parse(UrlFetchApp.fetch("https://groups.roblox.com/v1/groups/2845412/roles").getContentText());
@@ -491,8 +491,10 @@ function meow(){
         //gets base list and dest list
         var list1 = databaseFromSheet()
         Logger.log("from sheet completed")
+
         var list2 = databaseFromGroup()
         Logger.log("from group completed")
+
         // compare and return the differences
         var compare = compareDatabases(list1, list2)
 
