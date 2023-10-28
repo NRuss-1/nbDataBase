@@ -9,7 +9,7 @@ import time
 from dotenv import load_dotenv, find_dotenv
 
 def set_env():
-    service_key = json.load(open('C:/Users/newby/Programming/CP/database/AutoMed/creds.json'))
+    service_key = json.load(open('<Your JSON Cred key file path here>'))
     service_key = json.dumps(service_key)
     #encode the key so that I don't have to pass it to env character by character(and makes it more secure!)
     encoded_service_key = base64.b64encode(service_key.encode('utf-8'))
@@ -162,5 +162,5 @@ if __name__ == "__main__":
     df = init_sheet()
     medal_table = compile_medals(df)
     commands = make_commands(medal_table)
-    #execute_commands(commands)
+    execute_commands(commands)
 
